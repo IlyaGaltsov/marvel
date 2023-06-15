@@ -4,44 +4,27 @@ import './randomChar.scss';
 
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import mjolnir from '../../resources/img/mjolnir.png';
-import MarverService from '../../services/MarvelService';
+import useMarverService from '../../services/MarvelService';
 import Spinner from '../spinner/spinner';
 
 const RandomChar = () =>{
-    const [char,setChar]=useState(null);
-    const [loading,setLoading]=useState(true);
-    const [error,setError]=useState(false);
+    const [char,setChar]=useState([]);
 
-    const marvelService = new MarverService();
-
-    const onError=()=>{
-        setLoading(loading => false)
-        setError(error => true)
-    }
-
-    const onCharLoading=()=>{
-        setLoading(loading => true)
-    }
+    const {loading,error,getCharacter,clearError}=useMarverService();
 
     const updateChar=()=>{
+        clearError();
         const id =Math.floor(Math.random()*(1011400-1011000)+1011000)
-        onCharLoading()
-        marvelService
-        .getCharacter(id)
+        getCharacter(id)
         .then(onCharLoaded)
-        .catch(onError)
     };
 
     const onCharLoaded=(char)=>{
         setChar(char);
-        setLoading(false)
     }
     useEffect(()=>{
         updateChar()
     },[])
-    if(updateChar.catch){
-        return updateChar()
-    }
 
     const errorMassage = error ? <ErrorMessage/>:null;
     const spinner = loading ? <Spinner/>:null;
