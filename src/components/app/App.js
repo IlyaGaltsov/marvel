@@ -1,36 +1,41 @@
-import {useState} from "react";
-import PropTypes from 'prop-types'
+import {lazy, Suspense} from 'react';
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 import AppHeader from "../appHeader/AppHeader";
-import RandomChar from "../randomChar/RandomChar";
-import CharList from "../charList/CharList";
-import CharInfo from "../charInfo/CharInfo";
-import ComicsList from "../comicsList/ComicsList"
+import Spinner from '../spinner/spinner';
 
-import decoration from '../../resources/img/vision.png';
+const Page404 = lazy(() => import('../Pages/Page404'));
+const MainPage = lazy(() => import('../Pages/MainPages'));
+const ComicsPage = lazy(() => import('../Pages/ComicsPage'));
+const SingleComicPage = lazy(() => import('../Pages/SingleComicPage'));
 
 const App = () => {
-    const [selectedChar,setSelectedChar]=useState(null);
-    const onCharSelected=(id)=>{
-            setSelectedChar(id)
-    }
+    
     return (
-        <div className="app">
-            <AppHeader/>
-            <main>
-                {/*<RandomChar/>
-                <div className="char__content">
-                    <CharList onCharSelected={onCharSelected}/>
-                    <CharInfo charId={selectedChar}/>
-                </div>
-                <img className="bg-decoration" src={decoration} alt="vision"/>
-                */}
-                <ComicsList/>
-            </main>
-        </div>
+        <Router>
+            <div className="app">
+                <AppHeader/>
+                <main>
+                    <Suspense fallback={<Spinner/>}>
+                        <Switch>
+                            <Route exact path="/">
+                                <MainPage/>
+                            </Route>
+                            <Route exact path="/comics">
+                                <ComicsPage/>
+                            </Route>
+                            <Route exact path="/comics/:comicId">
+                                <SingleComicPage/>
+                            </Route>
+                            <Route path="*">
+                                <Page404/>
+                            </Route>
+                        </Switch>
+                    </Suspense>
+                </main>
+            </div>
+        </Router>
     )
 }
-App.propTypes={
-    onCharSelected: PropTypes.number
-}
+
 export default App;
